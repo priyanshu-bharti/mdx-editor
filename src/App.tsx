@@ -28,6 +28,7 @@ import {
     InsertTable, //
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
+import { useState } from "react";
 
 const defaultSnippetContent = `
 export default function App() {
@@ -70,9 +71,12 @@ async function imageUploadHandler(image: File) {
 }
 
 function App() {
+    const [markdown, setMarkdown] = useState("Start typing here...");
+
     return (
         <MDXEditor
-            markdown="hello world"
+            markdown={markdown}
+            onChange={setMarkdown}
             plugins={[
                 headingsPlugin(),
                 thematicBreakPlugin(),
