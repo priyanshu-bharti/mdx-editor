@@ -28,7 +28,8 @@ import {
     InsertTable, //
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { get, set } from "idb-keyval";
 
 const defaultSnippetContent = `
 export default function App() {
@@ -71,7 +72,24 @@ async function imageUploadHandler(image: File) {
 }
 
 function App() {
-    const [markdown, setMarkdown] = useState("Start typing here...");
+
+    // FIXME: Markdown is not getting the initial values from indexedDB key value store.
+    const [markdown, setMarkdown] = useState<string>("");
+
+    // Future me is gonna hate myself for writing this...
+    useEffect(() => {
+        get("markdown").then((value) => setMarkdown(value));
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(async () => {
+            if (markdown) await set("markdown", markdown);
+        }, 200);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [markdown]);
 
     return (
         <MDXEditor
