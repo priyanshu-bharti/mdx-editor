@@ -25,10 +25,12 @@ import {
     thematicBreakPlugin, // Hr
     toolbarPlugin,
     UndoRedo,
-    InsertTable, //
+    InsertTable,
+    MDXEditorMethods, 
+    
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { get, set } from "idb-keyval";
 
 const defaultSnippetContent = `
@@ -75,25 +77,30 @@ function App() {
 
     // FIXME: Markdown is not getting the initial values from indexedDB key value store.
     const [markdown, setMarkdown] = useState<string>("");
-
+    const mdxEditorRef = React.useRef<MDXEditorMethods>(null)
     // Future me is gonna hate myself for writing this...
     useEffect(() => {
-        get("markdown").then((value) => setMarkdown(value));
+        get("markdown").then(
+            (value) =>{ 
+                setMarkdown(value)
+                mdxEditorRef.current?.setMarkdown(value)
+            });
     }, []);
 
     useEffect(() => {
         const timer = setTimeout(async () => {
-            if (markdown) await set("markdown", markdown);
+         await set("markdown", markdown);
         }, 200);
 
         return () => {
             clearTimeout(timer);
         };
     }, [markdown]);
-
+    
     return (
         <MDXEditor
             markdown={markdown}
+            ref={mdxEditorRef}
             onChange={setMarkdown}
             plugins={[
                 headingsPlugin(),
