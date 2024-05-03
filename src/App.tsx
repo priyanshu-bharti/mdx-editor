@@ -26,8 +26,7 @@ import {
     toolbarPlugin,
     UndoRedo,
     InsertTable,
-    MDXEditorMethods, 
-    
+    MDXEditorMethods,
 } from "@mdxeditor/editor";
 import "@mdxeditor/editor/style.css";
 import React, { useEffect, useState } from "react";
@@ -74,29 +73,30 @@ async function imageUploadHandler(image: File) {
 }
 
 function App() {
-
-    // FIXME: Markdown is not getting the initial values from indexedDB key value store.
     const [markdown, setMarkdown] = useState<string>("");
-    const mdxEditorRef = React.useRef<MDXEditorMethods>(null)
+    const mdxEditorRef = React.useRef<MDXEditorMethods>(null);
+
     // Future me is gonna hate myself for writing this...
     useEffect(() => {
-        get("markdown").then(
-            (value) =>{ 
-                setMarkdown(value)
-                mdxEditorRef.current?.setMarkdown(value)
-            });
+        get("markdown").then((value) => {
+            setMarkdown(value);
+            mdxEditorRef.current?.setMarkdown(value);
+        });
     }, []);
 
     useEffect(() => {
         const timer = setTimeout(async () => {
-         await set("markdown", markdown);
+            await set("markdown", markdown);
+
+            // TODO: This can be used for getting the actual markdown.
+            console.log(mdxEditorRef.current?.getMarkdown());
         }, 200);
 
         return () => {
             clearTimeout(timer);
         };
     }, [markdown]);
-    
+
     return (
         <MDXEditor
             markdown={markdown}
